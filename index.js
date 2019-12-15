@@ -1,62 +1,72 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const createDir = (distF) => {
-    fs.mkdirSync(process.cwd() + distF, {recursive: true}, err => {
-        if(err) {
-            console.log(err);
-        } else {
-            console.log('Created folder in', distF);
+const createDir = dest => {
+  fs.mkdirSync(path.join(__dirname, dest), { recursive: true }, err => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Created folder in", dest);
+    }
+  });
+};
+
+const getFiles = (src, dest, deletsrc = false) => {
+  fs.readdir(src, function(err, files) {
+    if (err) {
+      return console.log("Unable to scan directory: " + err);
+    }
+
+    files.forEach(function(file) {
+      const isDirectory = fs.statSync(path.join(src, `${file}`)).isDirectory();
+
+      if (!isDirectory) {
+        if (!fs.existsSync(`${dest}/${file.toString()[0]}`)) {
+          createDir(`${dest}/${file.toString()[0]}`);
         }
-    })
-} 
-
-const distF = '/dist'
-
-// createDir(dist)
-
-
-// folder analisys
-
-const directoryPath = path.join(__dirname, 'src');
-
-// const filesArr = []
-const getFiles = (src, dist) => {
-    fs.readdir(src, function (err, files) {
-        if (err) {
-            return console.log('Unable to scan directory: ' + err);
-        } 
-        files.forEach(function (file) {
-            const isDirectory =  fs.statSync(path.join(src, file)).isDirectory()
-
-            if(!isDirectory) {
-                // filesArr.push(file)
-                console.log(dist)
-                fs.writeFile(path.join(__dirname, dist), file.toString(), err => {
-                    if(err) {
-                        console.log(err);
-                    } else {
-                        console.log("Copied!")
-                    }
-                }); 
+        fs.writeFile(
+          path.join(__dirname, "dist", file.toString()[0], file.toString()),
+          file,
+          err => {
+            if (err) {
+              console.log(err);
             } else {
-                getFiles(path.join(src, file));
+              console.log("Copied!");
             }
-        });
+          }
+        );
+      } else {
+        getFiles(path.join(src, `${file}`), dest);
+      }
     });
-}
+  });
 
-getFiles(directoryPath, 'dist');
-// console.log(filesArr.sort())
+  if (deletsrc) {
+    deleteFolderRecursive(src);
+  }
+};
 
-// const sort = (source, dist) => {
-//     let oldFile = fs.createReadStream(source);
-//     let newFile = fs.createWriteStream(dist);
-  
-//     oldFile.pipe(newFile);
-//     oldFile.on('end', function () {
-//       fs.unlinkSync(source);
-//     });
-//   }
+const deleteFolderRecursive = function(src) {
+  if (fs.existsSync(src)) {
+    fs.readdirSync(src).forEach((file, index) => {
+      const cursrc = path.join(src, file);
+      if (fs.lstatSync(cursrc).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(cursrc);
+      } else {
+        // delete file
+        fs.unlinkSync(cursrc);
+      }
+    });
+    fs.rmdirSync(src);
+  }
+};
 
-//   sort(directoryPath, dist)
+const sort = (src, dist, deletsrc = false) => {
+  const directoryPath = path.join(__dirname, src);
+
+  createDir(dist);
+  getFiles(directoryPath, dist, deletsrc);
+};
+
+sort("src", "dist", true);
