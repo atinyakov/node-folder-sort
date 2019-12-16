@@ -11,7 +11,7 @@ const createDir = dest => {
   });
 };
 
-const getFiles = (src, dest, deletsrc = false) => {
+const getFiles = (src, dest) => {
   fs.readdir(src, function(err, files) {
     if (err) {
       return console.log("Unable to scan directory: " + err);
@@ -40,10 +40,6 @@ const getFiles = (src, dest, deletsrc = false) => {
       }
     });
   });
-
-  if (deletsrc) {
-    deleteFolderRecursive(src);
-  }
 };
 
 const deleteFolderRecursive = function(src) {
@@ -66,7 +62,11 @@ const sort = (src, dist, deletsrc = false) => {
   const directoryPath = path.join(__dirname, src);
 
   createDir(dist);
-  getFiles(directoryPath, dist, deletsrc);
+  getFiles(directoryPath, dist);
+
+  if (deletsrc) {
+    deleteFolderRecursive(src);
+  }
 };
 
-sort("src", "dist", true);
+sort("src", "dist");

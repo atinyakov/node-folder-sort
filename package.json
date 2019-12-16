@@ -1,0 +1,22 @@
+{
+  "name": "sort",
+  "version": "1.0.0",
+  "description": "sort files into folders based on their name",
+  "main": "index.js",
+  "bin": {
+    "mysort": "./mysort.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atinyakov/node-folder-sort.git"
+  },
+  "author": "Andrey Tinyakov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/atinyakov/node-folder-sort/issues"
+  },
+  "homepage": "https://github.com/atinyakov/node-folder-sort#readme",
+  "dependencies": {
+    "yargs": "^15.0.2"
+  }
+}
