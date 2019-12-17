@@ -30,8 +30,6 @@ const getFiles = (src, dest) => {
           err => {
             if (err) {
               console.log(err);
-            } else {
-              console.log("Copied!");
             }
           }
         );
@@ -69,4 +67,4 @@ const sort = (src, dist, deletsrc = false) => {
   }
 };
 
-sort("src", "dist");
+module.exports = sort;

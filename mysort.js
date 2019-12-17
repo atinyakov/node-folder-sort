@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const sort = require('./index')
 const argv = require('yargs')
     .usage('Usage: $0 [option]')
     .help('help')
@@ -25,3 +26,5 @@ const argv = require('yargs')
         demandOption: false,
         type: 'boolean'
     }).argv
+
+    sort(argv.s, argv.d, argv.rm)
