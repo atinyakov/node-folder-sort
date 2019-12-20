@@ -44,54 +44,24 @@ const getFiles = (src, dest) => {
 };
 
 const deleteFolderRecursive = function(src) {
-//   console.log(src);
   if (fs.existsSync(src)) {
-    fs.readdir(src, (err, files) => {
-        if(files) {
-            console.log(files)
-        }
+    fs.readdir(src, function(err, files) {
       files.forEach((file, index) => {
-        const cursrc = path.join(src, file);
-        let isDirectory;
-        fs.lstat(cursrc, (err, stats) => {
-          isDirectory = stats.isDirectory();
-            console.log(isDirectory);
-          if (!isDirectory) {
-            // console.log(cursrc.length)
-
-            fs.unlink(cursrc, err => {
-              if (err) throw err;
-            });
-          }
-          if (isDirectory){
-            fs.readdir(cursrc, (err, files) => {
-              console.log(cursrc, isDirectory, files, files.length);
-              if (files.length) {
-                deleteFolderRecursive(cursrc);
-              } else {
-                fs.rmdir(file, err => {
-                    if (err) throw err;
-                });
-              }
-            })
-            // });
-            // delete file
-            // fs.rmdir(path.join(src), err => {
-            //   if (err) throw err;
-            // });
-            //   }
-          }
-        });
-      });
-    //   fs.rmdir(src, err => {
-    //     if (err) throw err;
-    //   });
+      const cursrc = path.join(src, file);
+      if (fs.lstatSync(cursrc).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(cursrc);
+      } else {
+        // delete file
+        fs.unlinkSync(cursrc);
+      }
     });
-//   }
-    // fs.rmdir(path.join(src), err => {
-    //   if (err) throw err;
-    // });
-  }
+    setImmediate(() => fs.rmdir(src, function(err){
+      if (err) {
+        console.log(err);
+      } 
+    }));
+  })}
 };
 
 const sort = (src, dist, deletsrc = false) => {
@@ -101,7 +71,7 @@ const sort = (src, dist, deletsrc = false) => {
   getFiles(directoryPath, dist);
 
   if (deletsrc) {
-    deleteFolderRecursive(path.join(__dirname, src));
+     deleteFolderRecursive(path.join(__dirname, src));
   }
 };
 
